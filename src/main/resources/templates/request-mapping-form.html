@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Other CSS files and styles -->
+</head>
+<body>
+
+<div th:if="${successMessage}">
+    <p th:text="${successMessage}" class="success-message"></p>
+</div>
+<form th:action="@{/submit-mapping}" method="post" class="container mt-5">
+
+    <div class="form-group">
+        <label for="mappingName">Mapping Name:</label>
+        <input type="text" id="mappingName" name="mappingName" class="form-control">
+    </div>
+
+
+    <div class="form-group">
+        <label for="paths">Paths:</label>
+        <input type="text" id="paths" name="paths" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+        <label for="methods">Methods:</label>
+        <select id="methods" name="methods" class="form-control" required>
+            <option value="">Select Method</option>
+            <option th:each="method : ${T(org.springframework.http.HttpMethod).values()}"
+                    th:value="${method}" th:text="${method}"></option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="params">Params:</label>
+        <input type="text" id="params" name="params" class="form-control">
+    </div>
+
+    <div class="form-group">
+        <label for="headers">Headers:</label>
+        <input type="text" id="headers" name="headers" class="form-control">
+    </div>
+
+
+    <div class="form-group">
+        <label for="consumes">Consumes:</label>
+        <select id="consumes" name="consumes" class="form-control">
+            <option value="">Select Media Type</option>
+            <option th:each="type : ${mediaTypes}" th:value="${type}" th:text="${type}"></option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="produces">Produces:</label>
+        <select id="produces" name="produces" class="form-control">
+            <option value="">Select Media Type</option>
+            <option th:each="type : ${mediaTypes}" th:value="${type}" th:text="${type}"></option>
+        </select>
+    </div>
+
+
+
+
+    <div class="form-group">
+        <label for="expectedRequestBody">Expected Request Body:</label>
+        <input type="text" id="expectedRequestBody" name="expectedRequestBody" class="form-control">
+    </div>
+    <!-- Other form fields for customCondition, options, etc. -->
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+</body>
+</html>

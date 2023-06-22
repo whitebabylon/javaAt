@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Result</title>
+</head>
+<body>
+<!-- Thymeleaf fragment to be loaded -->
+<div th:fragment="content">
+    <!-- Previous response will be loaded here (if any) -->
+
+        <h2>Previous Response:</h2>
+    <table id="previousResponseTable" class="table table-striped">
+        <thead class="thead-dark">
+        <tr>
+            <th>Date</th>
+            <th>Response Message</th>
+            <th>Response Time (ms)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="response, iterationStatus : ${previousResponse.responseMessages}">
+            <td th:text="${previousResponse.data[iterationStatus.index]}"></td>
+            <td th:text="${response}"></td>
+            <td th:text="${previousResponse.responseTimes[iterationStatus.index]}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>

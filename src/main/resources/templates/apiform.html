@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>API Form</title>
+  <!-- Add CSS styles for DataTables -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css" />
+</head>
+<body>
+<form id="myForm" th:action="@{/apiform}" method="post" th:object="${formData}">
+  <input type="text" th:field="*{relationshipID}" />
+  <button type="submit" onclick="submitForm(event)">Submit</button>
+</form>
+
+<!-- Add a loading bar or spinner element -->
+<div id="loading-bar"></div>
+
+<!-- Load dynamic content into this div -->
+<div id="dynamic-content">
+  <!-- Previous response will be loaded here (if any) -->
+  <div th:fragment="response" th:if="${previousResponse}">
+    <h2>Previous Response:</h2>
+    <table id="previousResponseTable" class="table table-striped">
+      <thead class="thead-dark">
+      <tr>
+        <th>Date</th>
+        <th>Response Message</th>
+        <th>Response Time (ms)</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="response, iterationStatus : ${previousResponse.responseMessages}">
+        <td th:text="${previousResponse.data[iterationStatus.index]}"></td>
+        <td th:text="${response}"></td>
+        <td th:text="${previousResponse.responseTimes[iterationStatus.index]}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Include jQuery and DataTables libraries -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+
+<script th:inline="javascript">
+        function submitForm(event) {
+            event.preventDefault(); // Prevent form submission and page refresh
+
+            // Show the loading bar
+            $('#loading-bar').show();
+
+            // Perform an AJAX request to submit the form data
+            $.ajax({
+                url: $('#myForm').attr('action'), // Use the form's action URL
+                type: 'POST',
+                data: $('#myForm').serialize(),
+                success: function(response) {
+                    // Hide the loading bar
+                    $('#loading-bar').hide();
+
+                    // Create a unique identifier for the response container
+                    var responseId = 'response-' + Date.now();
+
+                    // Create a new <div> to hold the response
+                    var responseDiv = $('<div>').attr('id', responseId);
+
+                    // Add the response to the new <div>
+                    responseDiv.html(response);
+
+                    // Clear the existing content of the dynamic content <div>
+                    $('#dynamic-content').empty();
+
+                    // Append the new <div> to the dynamic content <div>
+                    $('#dynamic-content').append(responseDiv);
+
+                    // Initialize DataTables on the table
+                    $('#previousResponseTable').DataTable();
+                },
+                error: function(xhr, status, error) {
+                    // Handle error if necessary
+                }
+            });
+        }
+    </script>
+
+<!-- Include Bootstrap JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</body>
+</html>
