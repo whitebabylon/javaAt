@@ -1,0 +1,28 @@
+public class ResourceThrottler {
+
+    public static void throttleCPU(int numThreads) {
+        for (int i = 0; i < numThreads; i++) {
+            new Thread(() -> {
+                while (true) {
+                    // Busy loop to simulate CPU load
+                }
+            }).start();
+        }
+    }
+
+    public static void throttleRAM(long bytesToAllocate) {
+        try {
+            byte[] block = new byte[(int) bytesToAllocate];
+            // Optionally fill the array to ensure the memory is actually allocated.
+            Arrays.fill(block, (byte) 1);
+            // Keep the block referenced to prevent it from being garbage collected.
+        } catch (OutOfMemoryError e) {
+            System.err.println("Ran out of memory!");
+        }
+    }
+
+    public static void main(String[] args) {
+        throttleCPU(4); // Start 4 threads to simulate CPU load
+        throttleRAM(1024 * 1024 * 1024); // Allocate 1GB of RAM
+    }
+}
