@@ -26,3 +26,74 @@ public class ResourceThrottler {
         throttleRAM(1024 * 1024 * 1024); // Allocate 1GB of RAM
     }
 }
+
+server.tomcat.max-threads=200
+server.tomcat.max-connections=10000
+server.tomcat.accept-count=100
+server.tomcat.connection-timeout=20000
+
+
+
+MongoClientOptions.builder()
+  .connectTimeout(20000) // equivalent to server.tomcat.connection-timeout
+  .socketTimeout(20000)
+  .build();
+
+MongoClientOptions.builder().maxConnectionPoolSize(200).build();
+
+
+connections (equivalent to server.tomcat.max-connections):
+In the mongod.conf file or equivalent configuration for MongoDB, you can set the maxIncomingConnections which limits the number of simultaneous connections that the MongoDB server will accept.
+net:
+  maxIncomingConnections: 10000
+
+
+# Connection timeout and socket timeout in milliseconds
+spring.data.mongodb.connect-timeout=20000
+spring.data.mongodb.socket-timeout=20000
+
+
+
+# JDBC
+
+# Maximum number of pooled connections
+spring.datasource.hikari.maximum-pool-size=10
+
+# Connection timeout in milliseconds
+spring.datasource.hikari.connection-timeout=30000
+
+# Maximum lifetime of a connection in the pool in milliseconds
+spring.datasource.hikari.max-lifetime=1800000
+
+# Idle timeout in milliseconds
+spring.datasource.hikari.idle-timeout=600000
+
+# Minimum number of idle connections that HikariCP tries to maintain in the pool
+spring.datasource.hikari.minimum-idle=5
+
+
+
+import org.apache.catalina.startup.Tomcat;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class TomcatConfig {
+
+    @Bean
+    public WebServerFactoryCustomizer<ConfigurableTomcatWebServerFactory> servletContainer() {
+        return factory -> {
+            if (factory instanceof TomcatServletWebServerFactory) {
+                ((TomcatServletWebServerFactory) factory).addConnectorCustomizers(connector -> {
+                    Tomcat tomcat = (Tomcat) connector.getService().getContainer();
+                    tomcat.getEngine().setName("CustomThreadName");
+                });
+            }
+        };
+    }
+}
+
+
